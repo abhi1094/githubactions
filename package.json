@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "server": "node server"
+    "server": "node server",
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -19,5 +20,8 @@
   "dependencies": {
     "express": "^4.17.1",
     "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "mocha": "^8.1.3"
   }
 }
