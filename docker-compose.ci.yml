@@ -1,0 +1,49 @@
+version: "3"
+services:
+  selenium-hub:
+    image: selenium/hub:${SELENIUM_VERSION}
+
+  chrome:
+    image: selenium/node-chrome:${SELENIUM_VERSION}
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - selenium-hub
+    environment:
+      - HUB_HOST=selenium-hub
+      - HUB_PORT=4444
+      - START_XVFB=false
+    depends_on: 
+      - selenium-hub
+
+  firefox:
+    image: selenium/node-firefox:${SELENIUM_VERSION}
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - selenium-hub
+    environment:
+      - HUB_HOST=selenium-hub
+      - HUB_PORT=4444
+      - START_XVFB=false
+    depends_on: 
+      - selenium-hub
+
+  node:
+    container_name: e2e-tests-container
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - /dev/shm:/dev/shm
+      - ./report:/usr/app/report
+    environment:
+      - HUB_HOST=selenium-hub
+      - HUB_PORT=4444
+      - GITHUB_ACTIONS=${GITHUB_ACTIONS}
+      - GITHUB_REF=${GITHUB_REF}
+      - GITHUB_SHA=${GITHUB_SHA}
+      - GITHUB_RUN_NUMBER=${GITHUB_RUN_NUMBER}
+    depends_on:
+      - chrome
+      - firefox

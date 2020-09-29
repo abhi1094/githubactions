@@ -1,19 +1,24 @@
 FROM node:12
+LABEL maintainer="Labs42"
 
-# Create app directory
-WORKDIR /usr/src/app
+WORKDIR /usr/app
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY package*.json ./
+ADD ./scripts/wait-for-it.sh ./
+RUN chmod 755 wait-for-it.sh
+ADD ./scripts/run.sh ./
+RUN chmod 755 run.sh
 
-RUN npm install
-# If you are building your code for production
-# RUN npm ci --only=production
+ADD ./package.json package.json
+ADD ./package-lock.json package-lock.json
 
-# Bundle app source
-COPY . .
+RUN npm ci
+ADD ./.env ./
+ADD ./tsconfig.json ./
+ADD ./.eslintrc.js ./
+ADD ./wdio.conf.js ./
+ADD ./cucumber.report.conf.js ./
+ADD ./config config
+ADD ./src src
+RUN npm run lint
 
-EXPOSE 5080
-CMD [ "node", "server.js" ]
+CMD [ "./run.sh"]
